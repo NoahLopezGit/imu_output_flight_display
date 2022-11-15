@@ -4,3 +4,5 @@ This repo contains the code to display a stream of serial data (commonly sent th
 This app is designed to be customizable. Different flight displays can be created in QtDesigner and connected to the pyqtgraph plot handling. 
 
 ![flight display](/pictures/20221113-Flight_Display.png?raw=true "Title")
+
+![flight display](/pictures/MainWindow 2022-11-14 21-43-41_Trim.mp4?raw=true "Title")
