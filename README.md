@@ -5,4 +5,3 @@ This app is designed to be customizable. Different flight displays can be create
 
 ![flight display](/pictures/20221113-Flight_Display.png?raw=true "Title")
 
-![flight display](/pictures/video_example.mp4?raw=true "Title")
