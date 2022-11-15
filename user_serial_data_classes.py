@@ -33,6 +33,53 @@ class QuaternionSerialData:
         new_vector = Quaternion.from_value(quaternion_vector) * self.vector
         self.plothanlder.setData(pos=[self.center,new_vector])
 
+class QuaternionShapeSerialData:
+    def __init__(self, name, display, dtype_format_specifier='f', dsize=4):
+        self.name = name
+        self.display = display
+        self.dtype_format_specifier = dtype_format_specifier
+        self.dsize = dsize
+
+        #define rectangular prism with point at top
+        self.vectors = [
+            [np.array([0,0,-1]),np.array([0.05,0.05,-1])],
+            [np.array([0,0,-1]),np.array([-0.05,0.05,-1])],
+            [np.array([0,0,-1]),np.array([-0.05,-0.05,-1])],
+            [np.array([0,0,-1]),np.array([0.05,-0.05,-1])],
+            [np.array([0.05,0.05,-1]),np.array([0.05,0.05,1.0])],
+            [np.array([-0.05,0.05,-1]),np.array([-0.05,0.05,1.0])],
+            [np.array([-0.05,-0.05,-1]),np.array([-0.05,-0.05,1.0])],
+            [np.array([0.05,-0.05,-1]),np.array([0.05,-0.05,1.0])],
+            [np.array([0.05,0.05,1.0]),np.array([0,0,1.25])],
+            [np.array([-0.05,0.05,1.0]),np.array([0,0,1.25])],
+            [np.array([-0.05,-0.05,1.0]),np.array([0,0,1.25])],
+            [np.array([0.05,-0.05,1.0]),np.array([0,0,1.25])]
+        ]
+
+    def add_plot_handler(self, plot_figure):
+        self.line_handlers = []
+        for vector_set in self.vectors:
+            self.line_handlers.append(GLLinePlotItem(pos=[vector_set[0],vector_set[1]], width=2, antialias=False))
+            plot_figure.addItem(self.line_handlers[-1])
+        plot_figure.addItem(GLAxisItem())
+        plot_figure.setCameraParams(azimuth=22.5,distance=3)
+
+    def get_data(self, serial_connection):
+        quat_data = []
+        for _ in range(4):
+            data, = struct.unpack(self.dtype_format_specifier, serial_connection.read(size=self.dsize))
+            quat_data.append(data)
+        return quat_data 
+    
+    def update_plot(self, quaternion_vector):
+        #new_vector = Quaternion.from_value(quaternion_vector) * self.vector
+        quaternion = Quaternion.from_value(quaternion_vector)
+        for i, vector_set in enumerate(self.vectors):
+            vec_1_transform = quaternion * vector_set[0]
+            vec_2_transform = quaternion * vector_set[1]
+            self.line_handlers[i].setData(pos=[vec_1_transform,vec_2_transform])
+        #self.plothanlder.setData(pos=[self.center,new_vector])
+
 class GenericSerialData:
     def __init__(self, name, display, dtype_format_specifier='f', dsize=4):
         self.name = name

@@ -2,7 +2,7 @@ from flight_display_parent import Ui_MainWindow
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import csv
-from user_serial_data_classes import GenericSerialData, QuaternionSerialData, EulerSerialData
+from user_serial_data_classes import GenericSerialData, QuaternionShapeSerialData, EulerSerialData
 from serial_reading_handler import SerialRead
 import multiprocessing as mp
 import threading
@@ -73,7 +73,7 @@ if __name__=='__main__':
         GenericSerialData('Gyro Y', 'plotobj_strip_chart_5'),
         GenericSerialData('Gyro Z', 'plotobj_strip_chart_6'),
         EulerSerialData('Euler Data','plotobj_Euler_Plot'),
-        QuaternionSerialData('Quat Data','plotobj_Quat_Plot')
+        QuaternionShapeSerialData('Quat Data','plotobj_Quat_Plot')
     ]
 
     #start serial reading process
