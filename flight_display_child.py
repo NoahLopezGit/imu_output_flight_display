@@ -38,7 +38,7 @@ class FlightDisplay(Ui_MainWindow):
         self.update_time = time.time()
         self.framerates = deque([0]*5)
         self.timer = QtCore.QTimer()
-        self.timer.setInterval(math.ceil((1/15)*10**3))
+        self.timer.setInterval(math.ceil((1/60)*10**3))
         self.timer.timeout.connect(self.update_plot_data)
         self.timer.start()      
 
@@ -63,6 +63,8 @@ class FlightDisplay(Ui_MainWindow):
         Doesn't seem to be affected by decreasing amount of points to plot (don't think its performance bottleneck around plotting)
         this does not refresh screen each time a setData is called. Only after update function exits does it refresh screen
         it takes the program about 0.004 seconds (4 milliseconds, 250 Hz) to get through the update function. This means the refresh is limited on the GUI app side
+
+        I have figured out the 3d plotting is severely limiting the framerate. Taking out the 3d plotting gives 60 Hz+ rates with all the 2d plots running (before it was 10 Hz)
         '''
         if not self.updating:
             self.updating = True
@@ -100,16 +102,16 @@ if __name__=='__main__':
         # GenericSerialData('Gyro X', None),
         # GenericSerialData('Gyro Y', None),
         # GenericSerialData('Gyro Z', None),
-        # EulerSerialData('Euler Data',None),
-        # QuaternionShapeSerialData('Quat Data',None)
+        EulerSerialData('Euler Data',None),
+        QuaternionShapeSerialData('Quat Data',None),
         GenericSerialData('Accel X', 'plotobj_strip_chart_1'),
         GenericSerialData('Accel Y', 'plotobj_strip_chart_2'),
         GenericSerialData('Accel Z', 'plotobj_strip_chart_3'),
         GenericSerialData('Gyro X', 'plotobj_strip_chart_4'),
         GenericSerialData('Gyro Y', 'plotobj_strip_chart_5'),
-        GenericSerialData('Gyro Z', 'plotobj_strip_chart_6'),
-        EulerSerialData('Euler Data','plotobj_Euler_Plot'),
-        QuaternionShapeSerialData('Quat Data','plotobj_Quat_Plot')
+        GenericSerialData('Gyro Z', 'plotobj_strip_chart_6')
+        # EulerSerialData('Euler Data','plotobj_Euler_Plot'),
+        # QuaternionShapeSerialData('Quat Data','plotobj_Quat_Plot')
     ]
 
     #start serial reading process
