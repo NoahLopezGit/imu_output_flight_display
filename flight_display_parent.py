@@ -88,7 +88,7 @@ class Ui_MainWindow(object):
         self.label_9.setGeometry(QtCore.QRect(1850, 60, 200, 50))
         self.label_9.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_9.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.label_9.setObjectName("label_8")
+        self.label_9.setObjectName("label_9")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(1850, 10, 200, 50))
         self.pushButton.setObjectName("pushButton")

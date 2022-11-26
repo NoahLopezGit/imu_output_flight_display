@@ -33,10 +33,12 @@ class FlightDisplay(Ui_MainWindow):
         #setup background data handler thread
         data_handler = threading.Thread(target=self.data_handler)
         data_handler.start()
-        #setup GUI (plot refresh) updating
-        self.updating = False
+
+        #data for framerate tracking
         self.update_time = time.time()
         self.framerates = deque([0]*5)
+
+        #display update event timer
         self.timer = QtCore.QTimer()
         self.timer.setInterval(math.ceil((1/60)*10**3))
         self.timer.timeout.connect(self.update_plot_data)
@@ -66,23 +68,21 @@ class FlightDisplay(Ui_MainWindow):
 
         I have figured out the 3d plotting is severely limiting the framerate. Taking out the 3d plotting gives 60 Hz+ rates with all the 2d plots running (before it was 10 Hz)
         '''
-        if not self.updating:
-            self.updating = True
-            for i, data_stream in enumerate(self.data_streams):
-                if not self.running:
-                    break
-                if data_stream.display is not None:
-                    data_stream.update_plot(self.data_buff[i])
-            tmp_time = time.time()
-            self.framerates.append(1/(tmp_time-self.update_time))
-            self.framerates.popleft() 
+        for i, data_stream in enumerate(self.data_streams):
+            if not self.running:
+                break
+            if data_stream.display is not None:
+                data_stream.update_plot(self.data_buff[i])
+        #display framerate
+        self.label_9.setText(str(self.get_framerate()))
 
-            self.label_9.setText(f"{round(mean(self.framerates), 2)}")
-            self.update_time = tmp_time
-            self.updating = False
-
-            
-
+    def get_framerate(self):
+        tmp_time = time.time()
+        self.framerates.append(1/(tmp_time-self.update_time))
+        self.framerates.popleft() 
+        self.update_time = tmp_time
+        return round(mean(self.framerates), 2)
+        
     def stop_collection(self): #PyQt app recognizes this and executes on closing window
         self.running = False
         self.running_queue.put(False)
