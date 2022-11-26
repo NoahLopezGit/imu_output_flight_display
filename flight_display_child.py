@@ -6,6 +6,10 @@ from user_serial_data_classes import GenericSerialData, QuaternionShapeSerialDat
 from serial_reading_handler import SerialRead
 import multiprocessing as mp
 import threading
+import time
+from statistics import mean
+import math
+from collections import deque
 
 class FlightDisplay(Ui_MainWindow):
     #UI_MainWindow has its own __init__ method or something so no init is necessary
@@ -21,7 +25,8 @@ class FlightDisplay(Ui_MainWindow):
         #construct dictionary of plot handling objects. they are identified by 'plotobj'; this must be set in the object creation
         self.plotobj_dict = {key:value for (key, value) in self.__dict__.items() if 'plotobj' in key}
         for data_stream in data_streams:
-            data_stream.add_plot_handler(self.plotobj_dict[data_stream.display])
+            if data_stream.display is not None:
+                data_stream.add_plot_handler(self.plotobj_dict[data_stream.display])
         #connect pushButton to stop_collection function
         self.pushButton.clicked.connect(self.stop_collection)
 
@@ -29,8 +34,11 @@ class FlightDisplay(Ui_MainWindow):
         data_handler = threading.Thread(target=self.data_handler)
         data_handler.start()
         #setup GUI (plot refresh) updating
+        self.updating = False
+        self.update_time = time.time()
+        self.framerates = deque([0]*5)
         self.timer = QtCore.QTimer()
-        self.timer.setInterval(10)
+        self.timer.setInterval(math.ceil((1/15)*10**3))
         self.timer.timeout.connect(self.update_plot_data)
         self.timer.start()      
 
@@ -50,10 +58,28 @@ class FlightDisplay(Ui_MainWindow):
         print('data handler stopped')  
 
     def update_plot_data(self):
-        for i, data_stream in enumerate(self.data_streams):
-            if not self.running:
-                break
-            data_stream.update_plot(self.data_buff[i])
+        '''
+        TODO this is actually pretty slow with all graphs... need to find a faster way to update
+        Doesn't seem to be affected by decreasing amount of points to plot (don't think its performance bottleneck around plotting)
+        this does not refresh screen each time a setData is called. Only after update function exits does it refresh screen
+        it takes the program about 0.004 seconds (4 milliseconds, 250 Hz) to get through the update function. This means the refresh is limited on the GUI app side
+        '''
+        if not self.updating:
+            self.updating = True
+            for i, data_stream in enumerate(self.data_streams):
+                if not self.running:
+                    break
+                if data_stream.display is not None:
+                    data_stream.update_plot(self.data_buff[i])
+            tmp_time = time.time()
+            self.framerates.append(1/(tmp_time-self.update_time))
+            self.framerates.popleft() 
+
+            self.label_9.setText(f"{round(mean(self.framerates), 2)}")
+            self.update_time = tmp_time
+            self.updating = False
+
+            
 
     def stop_collection(self): #PyQt app recognizes this and executes on closing window
         self.running = False
@@ -66,6 +92,16 @@ if __name__=='__main__':
     data_queue = mp.SimpleQueue()
     running_queue = mp.SimpleQueue()
     data_streams = [
+        GenericSerialData('Duration', None, dtype_format_specifier='L'), #struct unpack unsigned long format is 'L'
+        GenericSerialData('Time Period', None, dtype_format_specifier='L'),
+        # GenericSerialData('Accel X', None),
+        # GenericSerialData('Accel Y', None),
+        # GenericSerialData('Accel Z', None),
+        # GenericSerialData('Gyro X', None),
+        # GenericSerialData('Gyro Y', None),
+        # GenericSerialData('Gyro Z', None),
+        # EulerSerialData('Euler Data',None),
+        # QuaternionShapeSerialData('Quat Data',None)
         GenericSerialData('Accel X', 'plotobj_strip_chart_1'),
         GenericSerialData('Accel Y', 'plotobj_strip_chart_2'),
         GenericSerialData('Accel Z', 'plotobj_strip_chart_3'),
@@ -77,7 +113,7 @@ if __name__=='__main__':
     ]
 
     #start serial reading process
-    port = 'COM4'
+    port = 'COM3'
     baudrate = 115200
     timeout = 5
     SerialRead(port, baudrate, timeout, data_streams, data_queue, running_queue)
@@ -90,5 +126,3 @@ if __name__=='__main__':
     ui.user_setup(data_streams, running_queue, data_queue)
     MainWindow.show()
     sys.exit(app.exec_())
-
-    

@@ -4,9 +4,12 @@
 #include <utility/imumaths.h>
 
 #define BNO055_SAMPLERATE_DELAY_MS (10) //this defines the samplerate of the sensor
-Adafruit_BNO055 myIMU = Adafruit_BNO055(); //create IMU object 
+Adafruit_BNO055 myIMU = Adafruit_BNO055(); //create IMU object
+unsigned long current_time; 
 
 struct{
+    unsigned long duration;
+    unsigned long time_interval;
     imu::Vector<3> acceleration; //these can be indexed like [0],[1],[2]
     imu::Vector<3> angular_acceleration;
     //imu::Vector<3> magnetic_field;
@@ -20,11 +23,16 @@ void setup() {
     delay(1000);
     int8_t temp = myIMU.getTemp(); //apparently some data depends on temp 
     myIMU.setExtCrystalUse(true); // not sure
+    my_serial_packet.duration = millis();
 };
 
 void loop() {
     //tell what sensor to work with :: send vector with 3 numbers (components) acc is variable which data goes into (you don't have to declare this variable)
     // .getVector(Sensor::Type of data you want)
+    current_time = millis();
+    my_serial_packet.time_interval = current_time - my_serial_packet.duration;
+    my_serial_packet.duration = current_time;
+
     my_serial_packet.acceleration = myIMU.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
     my_serial_packet.angular_acceleration = myIMU.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
     //my_serial_packet.magnetic_field = myIMU.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);

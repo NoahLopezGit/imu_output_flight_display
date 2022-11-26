@@ -87,8 +87,8 @@ class GenericSerialData:
         self.dtype_format_specifier = dtype_format_specifier
         self.dsize = dsize
 
-        self.x_data_array = list(range(1000))
-        self.y_data_array = deque([0]*1000)
+        self.x_data_array = list(range(100))
+        self.y_data_array = deque([0]*100)
 
     def add_plot_handler(self, current_plot):
         current_plot.setYRange(-10,20, padding=0.05)

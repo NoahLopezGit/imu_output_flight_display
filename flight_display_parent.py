@@ -17,7 +17,7 @@ import sys
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(2560, 1444)
+        MainWindow.resize(2736, 1824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.plotobj_Quat_Plot = GLViewWidget(self.centralwidget)
@@ -84,8 +84,13 @@ class Ui_MainWindow(object):
         self.label_8.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_8.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_8.setObjectName("label_8")
+        self.label_9 = QtWidgets.QLabel(self.centralwidget)
+        self.label_9.setGeometry(QtCore.QRect(1850, 60, 200, 50))
+        self.label_9.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.label_9.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_9.setObjectName("label_8")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(1750, 10, 101, 23))
+        self.pushButton.setGeometry(QtCore.QRect(1850, 10, 200, 50))
         self.pushButton.setObjectName("pushButton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
