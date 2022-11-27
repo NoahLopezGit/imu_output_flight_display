@@ -77,7 +77,7 @@ if __name__=='__main__':
     ]
 
     #start serial reading process
-    port = 'COM4'
+    port = 'COM3'
     baudrate = 115200
     timeout = 5
     SerialRead(port, baudrate, timeout, data_streams, data_queue, running_queue)

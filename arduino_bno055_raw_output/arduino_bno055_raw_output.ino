@@ -16,7 +16,10 @@ struct{
 
 void setup() {
     Serial.begin(115200);
-    myIMU.begin(); //start IMU
+    myIMU.begin(); 
+    //start IMU
+    //SDA connects to arduinos A4 (this is arduino's data pin)
+    //SCL connects to arduinos A5 (this is arduino's clock pin)
     delay(1000);
     int8_t temp = myIMU.getTemp(); //apparently some data depends on temp 
     myIMU.setExtCrystalUse(true); // not sure
